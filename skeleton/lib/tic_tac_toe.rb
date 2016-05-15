@@ -1,4 +1,6 @@
 # DON'T EDIT ME!
+require 'colorize'
+require_relative 'cursorable'
 
 class Board
   attr_reader :rows
@@ -111,10 +113,26 @@ class TicTacToe
     end
   end
 
-  def show
+  def show(*cursor_pos)
+     @cursor_pos = cursor_pos
     # not very pretty printing!
-    self.board.rows.each { |row| p row }
+    board.rows.each_with_index do |row, i|
+      puts " #{show_row(row, i).join(" ")}"
+    end
   end
+
+   def show_row(row, i)
+      row.each_with_index do |cell, j|
+         if cell.nil?
+            cell = " "
+         elsif cell == :x
+            cell = cell.to_s.colorize({color: :red})
+         elsif cell == :o
+            cell = cell.to_s.colorize({color: :blue})
+         end
+         cell = cell.colorize({background: :light_black}) if [i, j] == @cursor_pos
+      end
+   end
 
   private
   def place_mark(pos, mark)
@@ -130,7 +148,6 @@ class TicTacToe
     loop do
       current_player = self.players[self.turn]
       pos = current_player.move(self, self.turn)
-
       break if place_mark(pos, self.turn)
     end
 
@@ -140,28 +157,30 @@ class TicTacToe
 end
 
 class HumanPlayer
+  include Cursorable
+
   attr_reader :name
 
   def initialize(name)
     @name = name
+    @cursor_pos = [0, 0]
   end
 
   def move(game, mark)
-    game.show
-    while true
-      puts "#{@name}: please select your space"
-      row, col = gets.chomp.split(",").map(&:to_i)
-      if HumanPlayer.valid_coord?(row, col)
-        return [row, col]
-      else
-        puts "Invalid coordinate!"
-      end
+    pos = nil
+    until pos
+      system('clear')
+      game.show(@cursor_pos)
+      puts "#{@name}: please move the cursor(WASD), and press enter."
+      pos = get_input
     end
+
+    return pos
   end
 
   private
-  def self.valid_coord?(row, col)
-    [row, col].all? { |coord| (0..2).include?(coord) }
+  def self.valid_coord?(pos)
+    pos.all? { |coord| (0..2).include?(coord) }
   end
 end
 
