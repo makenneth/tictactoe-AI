@@ -8,10 +8,8 @@ class TicTacToeNode
      @next_mover_mark = next_mover_mark
      @prev_move_pos = prev_move_pos
    end
-#[:x :o: ]
-#[ , :x  ]
-#[      :X]
-   def losing_node?(evaluator)#this is where the issue is
+
+   def losing_node?(evaluator)
       opponent_move = (evaluator == :x ? :o : :x)
 
       return board.won? && board.winner != evaluator if board.over?

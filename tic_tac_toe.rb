@@ -1,92 +1,6 @@
-# DON'T EDIT ME!
 require 'colorize'
 require_relative 'cursorable'
-
-class Board
-  attr_reader :rows
-
-  def self.blank_grid
-    Array.new(3) { Array.new(3) }
-  end
-
-  def initialize(rows = self.class.blank_grid)
-    @rows = rows
-  end
-
-  def [](pos)
-    row, col = pos[0], pos[1]
-    @rows[row][col]
-  end
-
-  def []=(pos, mark)
-    raise "mark already placed there!" unless empty?(pos)
-
-    row, col = pos[0], pos[1]
-    @rows[row][col] = mark
-  end
-
-  def cols
-    cols = [[], [], []]
-    @rows.each do |row|
-      row.each_with_index do |mark, col_idx|
-        cols[col_idx] << mark
-      end
-    end
-
-    cols
-  end
-
-  def diagonals
-    down_diag = [[0, 0], [1, 1], [2, 2]]
-    up_diag = [[0, 2], [1, 1], [2, 0]]
-
-    [down_diag, up_diag].map do |diag|
-      # Note the `row, col` inside the block; this unpacks, or
-      # "destructures" the argument. Read more here:
-      # http://tony.pitluga.com/2011/08/08/destructuring-with-ruby.html
-      diag.map { |row, col| @rows[row][col] }
-    end
-  end
-
-  def dup
-    duped_rows = rows.map(&:dup)
-    self.class.new(duped_rows)
-  end
-
-  def empty?(pos)
-    self[pos].nil?
-  end
-
-  def tied?
-    return false if won?
-
-    # no empty space?
-    @rows.all? { |row| row.none? { |el| el.nil? }}
-  end
-
-  def over?
-    # don't use Ruby's `or` operator; always prefer `||`
-    won? || tied?
-  end
-
-  def winner
-    (rows + cols + diagonals).each do |triple|
-      return :x if triple == [:x, :x, :x]
-      return :o if triple == [:o, :o, :o]
-    end
-
-    nil
-  end
-
-  def won?
-    !winner.nil?
-  end
-end
-
-# Notice how the Board has the basic rules of the game, but no logic
-# for actually prompting the user for moves. This is a rigorous
-# decomposition of the "game state" into its own pure object
-# unconcerned with how moves are processed.
+require_relative 'board'
 
 class TicTacToe
   class IllegalMoveError < RuntimeError
@@ -115,7 +29,6 @@ class TicTacToe
 
   def show(*cursor_pos)
      @cursor_pos = cursor_pos
-    # not very pretty printing!
     board.rows.each_with_index do |row, i|
       puts " #{show_row(row, i).join(" ")}"
     end
@@ -130,7 +43,7 @@ class TicTacToe
          elsif cell == :o
             cell = cell.to_s.colorize({color: :blue})
          end
-         cell = cell.colorize({background: :light_black}) if [i, j] == @cursor_pos
+         cell = cell.colorize({background: :white}) if [i, j] == @cursor_pos
       end
    end
 
@@ -151,7 +64,6 @@ class TicTacToe
       break if place_mark(pos, self.turn)
     end
 
-    # swap next whose turn it will be next
     @turn = ((self.turn == :x) ? :o : :x)
   end
 end
@@ -188,7 +100,7 @@ class ComputerPlayer
   attr_reader :name
 
   def initialize
-    @name = "Tandy 400"
+    @name = "Robot"
   end
 
   def move(game, mark)
@@ -209,7 +121,6 @@ class ComputerPlayer
       end
     end
 
-    # no winning move
     nil
   end
 
@@ -226,7 +137,7 @@ end
 
 if __FILE__ == $PROGRAM_NAME
   puts "Play the dumb computer!"
-  hp = HumanPlayer.new("Ned")
+  hp = HumanPlayer.new("Player1")
   cp = ComputerPlayer.new
 
   TicTacToe.new(hp, cp).run

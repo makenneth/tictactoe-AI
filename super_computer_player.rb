@@ -1,5 +1,5 @@
 require_relative 'tic_tac_toe_node'
-require 'byebug'
+
 class SuperComputerPlayer < ComputerPlayer
   def move(game, mark)
      new_node = TicTacToeNode.new(game.board, mark)
@@ -10,7 +10,6 @@ class SuperComputerPlayer < ComputerPlayer
 
      new_node_children.each do |child|
         return child.prev_move_pos unless child.losing_node?(mark)
-        #this logic has issue
      end
 
      raise "No non-losing nodes Error"
@@ -19,7 +18,7 @@ end
 
 if __FILE__ == $PROGRAM_NAME
   puts "Play the brilliant computer!"
-  hp = HumanPlayer.new("Jeff")
+  hp = HumanPlayer.new("Player1")
   cp = SuperComputerPlayer.new
 
   TicTacToe.new(hp, cp).run

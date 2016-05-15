@@ -1,4 +1,5 @@
-# w1d5: [TicTacToe AI][description]
+# W1D5 Project: TicTacToe AI
 
-[description]: https://github.com/appacademy/ruby-curriculum/blob/master/projects/w1d4-tic-tac-toe-ai.md
-# tictactoe-AI
+## Description
+- TicTacToe with unbeatable TicTacToeAI
+- Built with PolyTreeNode
